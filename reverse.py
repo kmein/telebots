@@ -8,7 +8,8 @@ def handle(msg):
     if content_type == "text":
         bot.sendMessage(chat_id, msg["text"][::-1], reply_to_message_id=message_id)
 
-TOKEN = open("reverse.token").read().strip()
+if __name__ == "__main__":
+    TOKEN = open("meerschweinchen.token").read().strip()
 
-bot = telepot.Bot(TOKEN)
-bot.message_loop(handle, run_forever="Listening ...")
+    bot = telepot.Bot(TOKEN)
+    bot.message_loop(handle, run_forever="Listening ...")
