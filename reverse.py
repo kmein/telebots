@@ -11,14 +11,11 @@ def reverse_image_inplace(img_file_path):
     os.remove(img_file_path)
     mirror_img.save(img_file_path)
 
-def reverse_audio_inplace(audio_file_path, mimetype):
-    category, audiotype = mimetype.split("/")
-    if category != "audio":
-        raise ValueError("The mimetype " + mimetype + " does not belong to an audio file.")
-    audio = pydub.AudioSegment.from_file(audio_file_path, audiotype)
+def reverse_audio_inplace(audio_file_path):
+    audio = pydub.AudioSegment.from_file(audio_file_path)
     reverse_audio = audio.reverse()
     os.remove(audio_file_path)
-    reverse_audio.export(audio_file_path, audiotype)
+    reverse_audio.export(audio_file_path)
 
 def handle(msg):
     content_type, _, chat_id, _, message_id = telepot.glance(msg, long=True)
@@ -42,7 +39,7 @@ def handle(msg):
         file_obj = bot.getFile(audio["file_id"])
         audio_file_path = os.path.basename(file_obj["file_path"])
         bot.download_file(file_obj["file_id"], audio_file_path)
-        reverse_audio_inplace(audio_file_path, audio["mime_type"] if "mime_type" in audio else "audio/ogg")
+        reverse_audio_inplace(audio_file_path)
         if content_type == "voice":
             bot.sendVoice(
                 chat_id,
