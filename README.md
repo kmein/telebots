@@ -10,6 +10,6 @@ This bot reads all of stdin and sends that to any chat it is part of.
 
 # Installation
 Please run `pip3 install -r requirements.txt` and then contact the
-[BotFather](telegram.me/botfather) and send `/newbot` to obtain a bot token.
+[BotFather](https://telegram.me/botfather) and send `/newbot` to obtain a bot token.
 This token then has to be saved as a text file whose path can be adjusted in the
 bot's source. For `sendmessage.py` it's the file `sendmessage.token`.
