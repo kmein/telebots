@@ -86,4 +86,4 @@ if __name__ == "__main__":
     TOKEN = open("meerschweinchen.token").read().strip()
 
     bot = telepot.Bot(TOKEN)
-    bot.message_loop(handle, run_forever="Listening ...")
+    bot.message_loop(handle, run_forever=True)
