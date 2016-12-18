@@ -28,7 +28,8 @@ def generate_latex(dt, longitude, latitude):
 
     return r"""\documentclass[a4paper]{article}
 \usepackage[utf8]{inputenc}
-\usepackage{mathpazo,horoscop}
+\usepackage{mathpazo}
+\usepackage[wasysym]{horoscop}
 \pagestyle{empty}
 \begin{document}
 \def\horoobjects{Sun,Moon,Mercury,Venus,Mars,Jupiter,Saturn,Uranus,Neptune,Pluto,Ascendant,MC}
@@ -50,7 +51,7 @@ def compile(code):
         pdf_name = replace_extension(temp.name, ".pdf") # we wanna save the pdf file
         temp.write(code)
         temp.seek(0) # rewind because pdflatex is a bitch
-        subprocess.run(["pdflatex", "--enable-write18", temp.name])
+        subprocess.call(["pdflatex", "--enable-write18", temp.name])
         for ext in (".log", ".aux", ".hor"):
             # remove files created by pdflatex command above
             try:
