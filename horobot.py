@@ -80,25 +80,28 @@ def degrees_to_location(dd, direction):
             direction = "N"
     return Location(direction, round(degrees), round(minutes), round(seconds))
 
-latitude = None
-longitude = None
-dob = None
+# dictionary: from chat_id to values, to keep multiple threads of conversation
+latitude = dict()
+longitude = dict()
+dob = dict()
 
 def handle(msg):
     global latitude, longitude, dob
+    print(latitude, longitude, dob)
     content_type, _, chat_id = telepot.glance(msg)
     if content_type in ["location", "venue"]:
         if content_type == "location":
             location = msg["location"]
         elif content_type == "venue":
             location = msg["venue"]["location"]
-        latitude = degrees_to_location(location["latitude"], "N")
-        longitude = degrees_to_location(location["longitude"], "E")
+        latitude[chat_id] = degrees_to_location(location["latitude"], "N")
+        longitude[chat_id] = degrees_to_location(location["longitude"], "E")
     elif content_type == "text":
-        caption = "Zeit: " + (dob.strftime(DT_FORMAT) if dob is not None else str(dob)) + "\nOrt: " + str(latitude) + " " + str(longitude)
+        date_of_birth = dob.setdefault(chat_id)
+        caption = "Zeit: " + (date_of_birth.strftime(DT_FORMAT) if date_of_birth is not None else "None") + "\nOrt: " + str(latitude.setdefault(chat_id)) + " " + str(longitude.setdefault(chat_id))
         if msg["text"].startswith(START_COMMAND):
-            tmp_pdf = compile(generate_latex(dob, longitude, latitude))
-            pdf = dob.strftime("%Y-%m-%dT%H%MZ") + ".pdf"
+            tmp_pdf = compile(generate_latex(dob.setdefault(chat_id), longitude.setdefault(chat_id), latitude.setdefault(chat_id)))
+            pdf = dob.setdefault(chat_id).strftime("%Y-%m-%dT%H%MZ") + ".pdf"
             os.rename(tmp_pdf, pdf)
             bot.sendDocument(chat_id, (pdf, open(pdf, "rb")), caption=caption)
             os.remove(pdf)
@@ -106,10 +109,10 @@ def handle(msg):
             bot.sendMessage(chat_id, caption)
         elif msg["text"].startswith(DOB_COMMAND):
             try:
-                dob = datetime.strptime(msg["text"], DOB_COMMAND + " " + DT_FORMAT)
+                dob[chat_id] = datetime.strptime(msg["text"], DOB_COMMAND + " " + DT_FORMAT)
             except ValueError:
                 bot.sendMessage(chat_id, "Bitte Datum in Format \"%s\" angeben" % DT_FORMAT)
-    print(latitude, longitude, dob)
+    print(latitude.setdefault(chat_id), longitude.setdefault(chat_id), dob.setdefault(chat_id))
 
 if __name__ == "__main__":
     TOKEN = open("meerschweinchen.token").read().strip()
