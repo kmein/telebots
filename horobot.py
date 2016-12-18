@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 from collections import namedtuple
 from datetime import datetime
-from telepot.namedtuple import ReplyKeyboardMarkup, KeyboardButton
 import os
 import re
 import subprocess
 import telepot
 import tempfile
 
-START = '✨'
-DT_FORMAT = "%d.%m.%Y, %H:%M"
+# START_COMMAND = '✨'
+DOB_COMMAND = "/zeit"
+INFO_COMMAND = "/info"
+START_COMMAND = "/astro"
+DT_FORMAT = "%Y-%m-%d %H:%M"
 
 class Location(namedtuple("Location", ["direction", "degrees", "minutes", "seconds"])):
     def __str__(self):
@@ -85,9 +87,6 @@ dob = None
 def handle(msg):
     global latitude, longitude, dob
     content_type, _, chat_id = telepot.glance(msg)
-
-    keyboard = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text=START)]])
-
     if content_type in ["location", "venue"]:
         if content_type == "location":
             location = msg["location"]
@@ -96,22 +95,23 @@ def handle(msg):
         latitude = degrees_to_location(location["latitude"], "N")
         longitude = degrees_to_location(location["longitude"], "E")
     elif content_type == "text":
-        if msg["text"] == START:
+        caption = "Zeit: " + (dob.strftime(DT_FORMAT) if dob is not None else str(dob)) + "\nOrt: " + str(latitude) + " " + str(longitude)
+        if msg["text"].startswith(START_COMMAND):
             tmp_pdf = compile(generate_latex(dob, longitude, latitude))
             pdf = dob.strftime("%Y-%m-%dT%H%MZ") + ".pdf"
             os.rename(tmp_pdf, pdf)
-            bot.sendDocument(chat_id, (pdf, open(pdf, "rb")),
-                    caption=dob.strftime(DT_FORMAT) + "\n" + str(latitude) + " " + str(longitude),
-                    reply_markup=keyboard)
+            bot.sendDocument(chat_id, (pdf, open(pdf, "rb")), caption=caption)
             os.remove(pdf)
-        else:
+        elif msg["text"].startswith(INFO_COMMAND):
+            bot.sendMessage(chat_id, caption)
+        elif msg["text"].startswith(DOB_COMMAND):
             try:
-                dob = datetime.strptime(msg["text"], DT_FORMAT)
+                dob = datetime.strptime(msg["text"], DOB_COMMAND + " " + DT_FORMAT)
             except ValueError:
                 bot.sendMessage(chat_id, "Bitte Datum in Format \"%s\" angeben" % DT_FORMAT)
     print(latitude, longitude, dob)
 
 if __name__ == "__main__":
-    TOKEN = open("horobot.token").read().strip()
+    TOKEN = open("meerschweinchen.token").read().strip()
     bot = telepot.Bot(TOKEN)
     bot.message_loop(handle, run_forever=True)
