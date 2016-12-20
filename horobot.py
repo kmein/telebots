@@ -92,6 +92,8 @@ def location_to_degrees(dms):
     return dd
 
 def adjust_dst(dt, longitude, latitude):
+    if dt is None:
+        return None
     location = "{},{}".format(location_to_degrees(latitude), location_to_degrees(longitude))
     timestamp = time.mktime(dt.timetuple())
     request = "https://maps.googleapis.com/maps/api/timezone/json?location={}&timestamp={}&key={}".format(location, timestamp, API_KEY)
