@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
 from collections import namedtuple
 from datetime import datetime
+import json
 import os
+import pytz
 import re
 import subprocess
 import telepot
 import tempfile
+import time
+import urllib.request
 
 # START_COMMAND = '✨'
 DOB_COMMAND = "/zeit"
 INFO_COMMAND = "/info"
 START_COMMAND = "/astro"
 DT_FORMAT = "%Y-%m-%d %H:%M"
+API_KEY = open("horobot.key").read().strip()
 
 class Location(namedtuple("Location", ["direction", "degrees", "minutes", "seconds"])):
     def __str__(self):
@@ -80,6 +85,21 @@ def degrees_to_location(dd, direction):
             direction = "N"
     return Location(direction, round(degrees), round(minutes), round(seconds))
 
+def location_to_degrees(dms):
+    dd = float(dms.degrees) + float(dms.minutes)/60 + float(dms.seconds)/(60*60);
+    if dms.direction == "W" or dms.direction == "S":
+        dd *= -1
+    return dd
+
+def adjust_dst(dt, longitude, latitude):
+    location = "{},{}".format(location_to_degrees(latitude), location_to_degrees(longitude))
+    timestamp = time.mktime(dt.timetuple())
+    request = "https://maps.googleapis.com/maps/api/timezone/json?location={}&timestamp={}&key={}".format(location, timestamp, API_KEY)
+    tz_info = json.loads(urllib.request.urlopen(request).read().decode("utf-8"))
+    time_zone = pytz.timezone(tz_info["timeZoneId"])
+    local_dt = time_zone.localize(dt, is_dst=False) # Note: is_dst doesn't do anything, only in ambiguous scenarios
+    return dt - local_dt.dst()
+
 # dictionary: from chat_id to values, to keep multiple threads of conversation
 latitude = dict()
 longitude = dict()
@@ -98,10 +118,13 @@ def handle(msg):
         longitude[chat_id] = degrees_to_location(location["longitude"], "E")
     elif content_type == "text":
         date_of_birth = dob.setdefault(chat_id)
-        caption = "Zeit: " + (date_of_birth.strftime(DT_FORMAT) if date_of_birth is not None else "None") + "\nOrt: " + str(latitude.setdefault(chat_id)) + " " + str(longitude.setdefault(chat_id))
+        lon = longitude.setdefault(chat_id)
+        lat = latitude.setdefault(chat_id)
+        adjusted_dob = adjust_dst(date_of_birth, lon, lat)
+        caption = "Zeit: " + (adjusted_dob.strftime(DT_FORMAT) if date_of_birth is not None else "None") + "\nOrt: " + str(lat) + " " + str(lon)
         if msg["text"].startswith(START_COMMAND):
-            tmp_pdf = compile(generate_latex(dob.setdefault(chat_id), longitude.setdefault(chat_id), latitude.setdefault(chat_id)))
-            pdf = dob.setdefault(chat_id).strftime("%Y-%m-%dT%H%MZ") + ".pdf"
+            tmp_pdf = compile(generate_latex(adjusted_dob, lon, lat))
+            pdf = adjusted_dob.strftime("%Y-%m-%dT%H%MZ") + ".pdf"
             os.rename(tmp_pdf, pdf)
             bot.sendDocument(chat_id, (pdf, open(pdf, "rb")), caption=caption)
             os.remove(pdf)
@@ -115,6 +138,6 @@ def handle(msg):
     print(latitude.setdefault(chat_id), longitude.setdefault(chat_id), dob.setdefault(chat_id))
 
 if __name__ == "__main__":
-    TOKEN = open("meerschweinchen.token").read().strip()
+    TOKEN = open("horobot.token").read().strip()
     bot = telepot.Bot(TOKEN)
     bot.message_loop(handle, run_forever=True)
