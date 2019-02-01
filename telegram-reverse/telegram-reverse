@@ -120,11 +120,11 @@ def reverse_audio(bot, update):
 
 
 if __name__ == "__main__":
-    if "REVERSE_TOKEN" not in os.environ:
-        print("Please specify bot token in variable REVERSE_TOKEN.", file=sys.stderr)
+    if "TELEGRAM_REVERSE_TOKEN" not in os.environ:
+        print("Please specify bot token in variable TELEGRAM_REVERSE_TOKEN.", file=sys.stderr)
         sys.exit(1)
 
-    bot = Updater(token=os.environ["REVERSE_TOKEN"].strip())
+    bot = Updater(token=os.environ["TELEGRAM_REVERSE_TOKEN"].strip())
     bot.dispatcher.add_handler(MessageHandler(Filters.text, reverse_text))
     bot.dispatcher.add_handler(MessageHandler(Filters.audio, reverse_audio))
     bot.dispatcher.add_handler(MessageHandler(Filters.voice, reverse_voice))
