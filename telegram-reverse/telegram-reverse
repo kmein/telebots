@@ -47,7 +47,7 @@ def reverse_text(bot, update):
 
 
 def reverse_photo(bot, update):
-    photo = sorted(update.message.photo, key=lambda p: p.file_size, reverse=True)[0]
+    photo = update.message.photo[-1]
     logging.info(
         "Photo {} (chat {}): {}".format(
             update.message.message_id, update.message.chat_id, photo
@@ -111,11 +111,22 @@ def reverse_audio(bot, update):
             update.message.message_id, update.message.chat_id, audio_file_path
         )
     )
+    if audio.thumb:
+        logging.info("Audio contains thumb")
+        thumb_file = bot.get_file(file_id=audio.thumb.file_id)
+        thumb_file_path = os.path.join(working_directory, os.path.basename(thumb_file.file_path))
+        thumb_file.download(custom_path=thumb_file_path)
+        reverse_image_inplace(thumb_file_path)
+        thumb = open(thumb_file_path, "rb")
+    else:
+        logging.info("Audio dont contain no thumb")
+        thumb = None
     bot.send_audio(
         update.message.chat_id,
         open(audio_file_path, "rb"),
         title=audio.title[::-1] if audio.title else None,
         performer=audio.performer[::-1] if audio.performer else None,
+        thumb=thumb,
         reply_to_message_id=update.message.message_id,
     )
     os.remove(audio_file_path)
@@ -131,4 +142,6 @@ if __name__ == "__main__":
     bot.dispatcher.add_handler(MessageHandler(Filters.audio, reverse_audio))
     bot.dispatcher.add_handler(MessageHandler(Filters.voice, reverse_voice))
     bot.dispatcher.add_handler(MessageHandler(Filters.photo, reverse_photo))
+
     bot.start_polling()
+    bot.idle()
