@@ -53,8 +53,8 @@ def reverse_photo(bot, update):
             update.message.message_id, update.message.chat_id, photo
         )
     )
-    photo_file = File(bot.get_file(photo.file_id), bot=bot)
-    photo_file_path = os.path.join(working_directory, photo_file.file_id)
+    photo_file = bot.get_file(file_id=photo.file_id)
+    photo_file_path = os.path.join(working_directory, os.path.basename(photo_file.file_path))
     photo_file.download(custom_path=photo_file_path)
     reverse_image_inplace(photo_file_path)
     logging.info(
@@ -78,8 +78,8 @@ def reverse_voice(bot, update):
             update.message.message_id, update.message.chat_id, voice
         )
     )
-    voice_file = File(bot.get_file(voice.file_id), bot=bot)
-    voice_file_path = os.path.join(working_directory, voice_file.file_id)
+    voice_file = bot.get_file(file_id=voice.file_id)
+    voice_file_path = os.path.join(working_directory, os.path.basename(voice_file.file_path))
     voice_file.download(custom_path=voice_file_path)
     reverse_audio_inplace(voice_file_path)
     logging.info(
@@ -102,8 +102,8 @@ def reverse_audio(bot, update):
             update.message.message_id, update.message.chat_id, audio
         )
     )
-    audio_file = File(bot.get_file(audio.file_id), bot=bot)
-    audio_file_path = os.path.join(working_directory, audio_file.file_id)
+    audio_file = bot.get_file(file_id=audio.file_id)
+    audio_file_path = os.path.join(working_directory, os.path.basename(audio_file.file_path))
     audio_file.download(custom_path=audio_file_path)
     reverse_audio_inplace(audio_file_path)
     logging.info(
