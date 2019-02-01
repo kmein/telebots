@@ -114,6 +114,8 @@ def reverse_audio(bot, update):
     bot.send_audio(
         update.message.chat_id,
         open(audio_file_path, "rb"),
+        title=audio.title[::-1] if audio.title else None,
+        performer=audio.performer[::-1] if audio.performer else None,
         reply_to_message_id=update.message.message_id,
     )
     os.remove(audio_file_path)
