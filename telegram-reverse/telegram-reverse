@@ -1,0 +1,132 @@
+#!/usr/bin/env python3
+
+import logging
+import PIL.Image, PIL.ImageOps
+import os
+import pydub
+import sys
+from telegram import File
+from telegram.ext import MessageHandler, Updater
+from telegram.ext.filters import Filters
+import tempfile
+
+logging.basicConfig(level=logging.INFO)
+working_directory = tempfile.mkdtemp(prefix="reverse")
+
+
+def reverse_image_inplace(img_file_path):
+    img = PIL.Image.open(img_file_path)
+    mirror_img = PIL.ImageOps.mirror(img)
+    os.remove(img_file_path)
+    mirror_img.save(img_file_path)
+
+
+def reverse_audio_inplace(audio_file_path):
+    audio = pydub.AudioSegment.from_file(audio_file_path)
+    reverse_audio = audio.reverse()
+    os.remove(audio_file_path)
+    reverse_audio.export(audio_file_path)
+
+
+def reverse_text(bot, update):
+    text = update.message.text
+    logging.info(
+        "Text {} (chat {}): {}".format(
+            update.message.message_id, update.message.chat_id, text
+        )
+    )
+    reply = text[::-1]
+    logging.info(
+        "Response to {} (chat {}): {}".format(
+            update.message.message_id, update.message.chat_id, reply
+        )
+    )
+    bot.send_message(
+        update.message.chat_id, reply, reply_to_message_id=update.message.message_id
+    )
+
+
+def reverse_photo(bot, update):
+    photo = sorted(update.message.photo, key=lambda p: p.file_size, reverse=True)[0]
+    logging.info(
+        "Photo {} (chat {}): {}".format(
+            update.message.message_id, update.message.chat_id, photo
+        )
+    )
+    photo_file = File(bot.get_file(photo.file_id), bot=bot)
+    photo_file_path = os.path.join(working_directory, photo_file.file_id)
+    photo_file.download(custom_path=photo_file_path)
+    reverse_image_inplace(photo_file_path)
+    logging.info(
+        "Response to {} (chat {}): {}".format(
+            update.message.message_id, update.message.chat_id, photo_file_path
+        )
+    )
+    bot.send_photo(
+        update.message.chat_id,
+        open(photo_file_path, "rb"),
+        caption=update.message.caption[::-1] if update.message.caption else None,
+        reply_to_message_id=update.message.message_id,
+    )
+    os.remove(photo_file_path)
+
+
+def reverse_voice(bot, update):
+    voice = update.message.voice
+    logging.info(
+        "Voice {} (chat {}): {}".format(
+            update.message.message_id, update.message.chat_id, voice
+        )
+    )
+    voice_file = File(bot.get_file(voice.file_id), bot=bot)
+    voice_file_path = os.path.join(working_directory, voice_file.file_id)
+    voice_file.download(custom_path=voice_file_path)
+    reverse_audio_inplace(voice_file_path)
+    logging.info(
+        "Response to {} (chat {}): {}".format(
+            update.message.message_id, update.message.chat_id, voice_file_path
+        )
+    )
+    bot.send_voice(
+        update.message.chat_id,
+        open(voice_file_path, "rb"),
+        reply_to_message_id=update.message.message_id,
+    )
+    os.remove(voice_file_path)
+
+
+def reverse_audio(bot, update):
+    audio = update.message.audio
+    logging.info(
+        "Audio {} (chat {}): {}".format(
+            update.message.message_id, update.message.chat_id, audio
+        )
+    )
+    audio_file = File(bot.get_file(audio.file_id), bot=bot)
+    audio_file_path = os.path.join(working_directory, audio_file.file_id)
+    audio_file.download(custom_path=audio_file_path)
+    reverse_audio_inplace(audio_file_path)
+    logging.info(
+        "Response to {} (chat {}): {}".format(
+            update.message.message_id, update.message.chat_id, audio_file_path
+        )
+    )
+    bot.send_audio(
+        update.message.chat_id,
+        open(audio_file_path, "rb"),
+        reply_to_message_id=update.message.message_id,
+    )
+    os.remove(audio_file_path)
+
+
+if __name__ == "__main__":
+    if "REVERSE_TOKEN" not in os.environ:
+        print("Please specify bot token in variable REVERSE_TOKEN.", file=sys.stderr)
+        sys.exit(1)
+
+    bot = Updater(token=os.environ["REVERSE_TOKEN"].strip())
+    bot.dispatcher.add_handler(MessageHandler(Filters.text, reverse_text))
+    bot.dispatcher.add_handler(MessageHandler(Filters.audio, reverse_audio))
+    bot.dispatcher.add_handler(MessageHandler(Filters.voice, reverse_voice))
+    bot.dispatcher.add_handler(MessageHandler(Filters.photo, reverse_photo))
+    bot.start_polling()
