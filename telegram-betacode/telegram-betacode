@@ -4,14 +4,14 @@ import logging
 import os
 import sys
 from telegram import InlineQueryResultArticle, InputTextMessageContent
-from telegram.ext import Updater, InlineQueryHandler
+from telegram.ext import Updater, InlineQueryHandler, MessageHandler, Filters
 
 
 def on_inline_query(bot, update):
     query = update.inline_query.query
     logging.info("Query: {}".format(query))
 
-    greek = betacode.conv.beta_to_uni(query.upper())
+    greek = betacode.conv.beta_to_uni(query)
 
     results = [
         InlineQueryResultArticle(
@@ -25,15 +25,26 @@ def on_inline_query(bot, update):
     update.inline_query.answer(results)
 
 
+def on_message(bot, update):
+    message = update.message
+    logging.info("Text: {}".format(message))
+    greek = betacode.conv.beta_to_uni(message.text)
+    bot.send_message(message.chat_id, greek)
+
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     if "TELEGRAM_BETACODE_TOKEN" not in os.environ:
-        print("Please specify bot token in variable TELEGRAM_BETACODE_TOKEN.", file=sys.stderr)
+        print(
+            "Please specify bot token in variable TELEGRAM_BETACODE_TOKEN.",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     bot = Updater(token=os.environ["TELEGRAM_BETACODE_TOKEN"])
     bot.dispatcher.add_handler(InlineQueryHandler(on_inline_query))
+    bot.dispatcher.add_handler(MessageHandler(Filters.text, on_message))
 
     bot.start_polling()
     bot.idle()
