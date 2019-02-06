@@ -42,7 +42,7 @@ if __name__ == "__main__":
         )
         sys.exit(1)
 
-    bot = Updater(token=os.environ["TELEGRAM_BETACODE_TOKEN"])
+    bot = Updater(token=os.environ["TELEGRAM_BETACODE_TOKEN"].strip())
     bot.dispatcher.add_handler(InlineQueryHandler(on_inline_query))
     bot.dispatcher.add_handler(MessageHandler(Filters.text, on_message))
 
