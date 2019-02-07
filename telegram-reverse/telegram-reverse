@@ -111,7 +111,7 @@ def reverse_audio(bot, update):
             update.message.message_id, update.message.chat_id, audio_file_path
         )
     )
-    if audio.thumb:
+    if hasattr(audio, "thumb"):
         logging.info("Audio contains thumb")
         thumb_file = bot.get_file(file_id=audio.thumb.file_id)
         thumb_file_path = os.path.join(working_directory, os.path.basename(thumb_file.file_path))
