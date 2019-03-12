@@ -9,6 +9,7 @@ import telepot
 import tempfile
 import time
 import urllib.request
+import sys
 
 # START_COMMAND = '✨'
 DOB_COMMAND = "/zeit"
@@ -139,6 +140,13 @@ def handle(msg):
     print(latitude.setdefault(chat_id), longitude.setdefault(chat_id), dob.setdefault(chat_id))
 
 if __name__ == "__main__":
-    TOKEN = open("horobot.token").read().strip()
-    bot = telepot.Bot(TOKEN)
+
+    if "TELEGRAM_HOROSCOPE_TOKEN" not in os.environ:
+        print(
+            "Please specify bot token in variable TELEGRAM_HOROSCOPE_TOKEN.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    bot = telepot.Bot(os.environ["TELEGRAM_HOROSCOPE_TOKEN"])
     bot.message_loop(handle, run_forever=True)
