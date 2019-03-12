@@ -14,4 +14,5 @@ let
     };
 in (pkgs.python3.withPackages (py: [py.pytz telepot])).env // {
   TELEGRAM_HOROSCOPE_TOKEN = builtins.readFile ./Tokenfile;
+  GOOGLE_MAPS_API_KEY = builtins.readFile ./horobot.key;
 }

@@ -16,7 +16,14 @@ DOB_COMMAND = "/zeit"
 INFO_COMMAND = "/info"
 START_COMMAND = "/astro"
 DT_FORMAT = "%Y-%m-%d %H:%M"
-API_KEY = open("horobot.key").read().strip()
+
+if "GOOGLE_MAPS_API_KEY" not in os.environ:
+    print(
+        "Please specify google maps API key in variable GOOGLE_MAPS_API_KEY.",
+        file=sys.stderr,
+    )
+    sys.exit(1)
+API_KEY = os.environ["GOOGLE_MAPS_API_KEY"]
 
 class Location(namedtuple("Location", ["direction", "degrees", "minutes", "seconds"])):
     def __str__(self):
