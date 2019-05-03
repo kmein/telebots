@@ -1,5 +1,4 @@
-{ pkgs ? import <nixpkgs> {} }:
-with pkgs.python3Packages;
+{ fetchFromGitHub, buildPythonApplication, buildPythonPackage, fetchPypi, aiohttp, urllib3, pytz }:
 let
   telepot =
     buildPythonPackage rec {
@@ -12,7 +11,11 @@ let
       propagatedBuildInputs = [ aiohttp urllib3 ];
       doCheck = false;
     };
-in (pkgs.python3.withPackages (py: [py.pytz telepot])).env // {
-  TELEGRAM_HOROSCOPE_TOKEN = builtins.readFile ./Tokenfile;
-  GOOGLE_MAPS_API_KEY = builtins.readFile ./horobot.key;
+in buildPythonApplication rec {
+  pname = "telegram-horoscope";
+  version = "0.1.0";
+
+  src = ./.;
+
+  propagatedBuildInputs = [ telepot pytz ];
 }
