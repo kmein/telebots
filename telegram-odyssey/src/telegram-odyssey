@@ -8,6 +8,8 @@ import sys
 from typing import Tuple, Optional
 import itertools
 
+ODYSSEIA_DIRECTORY = os.path.join(os.path.dirname(__file__), "../odysseia")
+
 
 def get_lines(book: int, start: int, end: int = None) -> str:
     def number_lines(iterable, start, end):
@@ -20,8 +22,8 @@ def get_lines(book: int, start: int, end: int = None) -> str:
                 yield line
 
     print(book, start, end)
-    book_path = os.path.join(f"../odysseia/{book:02}.txt")
-    end = end if end is not None else start 
+    book_path = os.path.join(ODYSSEIA_DIRECTORY, f"{book:02}.txt")
+    end = end if end is not None else start
     try:
         with open(book_path, "r") as book_file:
             lines = "".join(number_lines(book_file, start, end))
