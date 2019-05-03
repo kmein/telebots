@@ -62,7 +62,9 @@ def on_inline_query(bot, update):
         InlineQueryResultArticle(
             id=uuid4(),
             title=lines,
-            input_message_content=InputTextMessageContent(lines),
+            input_message_content=InputTextMessageContent(
+                lines, parse_mode=ParseMode.MARKDOWN
+            ),
         )
     ]
 
