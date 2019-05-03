@@ -21,7 +21,7 @@ def get_lines(book: int, start: int, end: int = None) -> str:
 
     print(book, start, end)
     book_path = os.path.join(f"odysseia/{book:02}.txt")
-    end = end if end is not None else start + 1
+    end = end if end is not None else start 
     try:
         with open(book_path, "r") as book_file:
             lines = "".join(number_lines(book_file, start, end))
