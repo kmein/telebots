@@ -1,5 +1,4 @@
-{ poetry2nix, python38 }:
-poetry2nix.mkPoetryScriptsPackage {
+{ poetry2nix }:
+poetry2nix.mkPoetryApplication {
     projectDir = ./.;
-    python = python38;
 }
