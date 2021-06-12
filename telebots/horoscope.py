@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from collections import namedtuple
 from datetime import datetime
 from telegram import Update, User
@@ -180,7 +179,6 @@ def location(update: Update, context: CallbackContext) -> int:
 
 
 def cancel(update: Update, context: CallbackContext) -> int:
-    # user = update.message.from_user
     update.message.reply_text("Bye!")
     return ConversationHandler.END
 
@@ -204,55 +202,3 @@ def run():
     )
     updater.start_polling()
     updater.idle()
-
-
-# def handle(msg):
-#    global latitude, longitude, dob
-#    print(latitude, longitude, dob)
-#    content_type, _, chat_id = telepot.glance(msg)
-#    if content_type in ["location", "venue"]:
-#        if content_type == "location":
-#            location = msg["location"]
-#        elif content_type == "venue":
-#            location = msg["venue"]["location"]
-#        latitude[chat_id] = degrees_to_location(location["latitude"], "N")
-#        longitude[chat_id] = degrees_to_location(location["longitude"], "E")
-#    elif content_type == "text":
-#        date_of_birth = dob.setdefault(chat_id)
-#        lon = longitude.setdefault(chat_id)
-#        lat = latitude.setdefault(chat_id)
-#        adjusted_dob = adjust_dst(date_of_birth, lon, lat)
-#        caption = (
-#            "Zeit: "
-#            + (
-#                adjusted_dob.strftime(DT_FORMAT)
-#                if date_of_birth is not None
-#                else "None"
-#            )
-#            + "\nOrt: "
-#            + str(lat)
-#            + " "
-#            + str(lon)
-#        )
-#        if msg["text"].startswith(START_COMMAND):
-#            tmp_pdf = compile(generate_latex(adjusted_dob, lon, lat))
-#            pdf = adjusted_dob.strftime("%Y-%m-%dT%H%MZ") + ".pdf"
-#            os.rename(tmp_pdf, pdf)
-#            bot.sendDocument(chat_id, (pdf, open(pdf, "rb")), caption=caption)
-#            os.remove(pdf)
-#        elif msg["text"].startswith(INFO_COMMAND):
-#            bot.sendMessage(chat_id, caption)
-#        elif msg["text"].startswith(DOB_COMMAND):
-#            try:
-#                dob[chat_id] = datetime.strptime(
-#                    msg["text"], DOB_COMMAND + " " + DT_FORMAT
-#                )
-#            except ValueError:
-#                bot.sendMessage(
-#                    chat_id, 'Bitte Datum in Format "%s" angeben' % DT_FORMAT
-#                )
-#    print(
-#        latitude.setdefault(chat_id),
-#        longitude.setdefault(chat_id),
-#        dob.setdefault(chat_id),
-#    )

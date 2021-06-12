@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from telegram import InlineQueryResultArticle, InputTextMessageContent, Update
 from telegram.ext import (
     Updater,

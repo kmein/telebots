@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from telegram import File, Update, PhotoSize, Audio
 from telegram.ext import MessageHandler, Updater, Filters, CallbackContext
 from typing import Union, IO

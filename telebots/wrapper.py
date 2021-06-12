@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from telegram import Update
 from telegram.ext import (
     CallbackContext,
@@ -13,7 +12,6 @@ from typing import Callable
 from uuid import uuid4
 import click
 import subprocess
-import telebots.bcolors
 import telebots.token
 
 
