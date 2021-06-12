@@ -11,6 +11,9 @@ This bot generates astrological [birth charts](https://en.wikipedia.org/wiki/Hor
 ## telegram-reverse
 This bot reverses what you send it, whether it be text, audio, or images.
 
+## telegram-proverb
+This bot generates inspiring but nonsensical proverbs and images.
+
 ## telegram-wrapper
 This bot pipes every text it gets through a shell command (supplied as a command-line argument to `telegram-wrapper`).
 For example, `telegram-wrapper rev` will call the UNIX `rev` program on every text the bot is sent, reversing it.

@@ -14,12 +14,14 @@ betacode = "^1.0"
 click = "^8.0.1"
 pygtrie = "^2.4.2"
 requests = "^2.25.1"
+proverb_pro = { git = "https://github.com/kmein/proverb-pro.git" }
 
 [tool.poetry.scripts]
 telegram-betacode = 'telebots.betacode:run'
 telegram-reverse = 'telebots.reverse:run'
 telegram-horoscope = 'telebots.horoscope:run'
 telegram-wrapper = 'telebots.wrapper:run'
+telegram-proverb = 'telebots.proverb:run'
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
