@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "telebots"
+version = "0.2.0"
+description = "Various Telegram bots"
+authors = ["Kierán Meinhardt <kmein@posteo.de>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pydub = "^0.25.1"
+Pillow = "^8.2.0"
+python-telegram-bot = "^13.6"
+pytz = "^2021.1"
+betacode = "^1.0"
+click = "^8.0.1"
+pygtrie = "^2.4.2"
+requests = "^2.25.1"
+
+[tool.poetry.scripts]
+telegram-betacode = 'telebots.betacode:run'
+telegram-reverse = 'telebots.reverse:run'
+telegram-horoscope = 'telebots.horoscope:run'
+telegram-wrapper = 'telebots.wrapper:run'
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

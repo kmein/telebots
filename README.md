@@ -1,26 +1,22 @@
 # telebots
-Various Telegram Bots
 
-## betacode.py
-This bot converts Ancient Greek beta code to precomposed Unicode Greek.
+## Introducing:
 
-## horobot.py
-This bot interacts with the user sending a location and a date/time. It will
-calculate an astrological birth/natal chart horoscope thingy and send it as PDF.
+## telegram-betacode
+This bot converts [Greek beta code](https://en.wikipedia.org/wiki/Beta_Code#Greek_alphabet) to the precomposed [polytonic](https://en.wikipedia.org/wiki/Greek_diacritics) Unicode symbols.
 
-## reverse.py
-This bot simply listens for messages and replies to each one with just the reversed message text.
-It also mirrors images and reverses music / voice notes.
+## telegram-horoscope
+This bot generates astrological [birth charts](https://en.wikipedia.org/wiki/Horoscope) for a supplied date/time and location. Note that this bot depends on `pdflatex` being installed and requires a Google Maps API key for using the [Timezone API](https://developers.google.com/maps/documentation/timezone/overview).
 
-## sendmessage.py
-This bot reads all of stdin and sends that to any chat it is part of.
+## telegram-reverse
+This bot reverses what you send it, whether it be text, audio, or images.
 
-## wrapper.py
-This bot uses a command (passed as command line argument) as a filter for every
-text. E.g. `./wrapper.py rev` will reverse every message.
+## telegram-wrapper
+This bot pipes every text it gets through a shell command (supplied as a command-line argument to `telegram-wrapper`).
+For example, `telegram-wrapper rev` will call the UNIX `rev` program on every text the bot is sent, reversing it.
 
-# Installation
-Please run `pip3 install -r requirements.txt` and then contact the
+## Installation
+Please run `poetry install` and then contact the
 [BotFather](https://telegram.me/botfather) and send `/newbot` to obtain a bot token.
-This token then has to be saved as a text file whose path can be adjusted in the
-bot's source. For `sendmessage.py` it's the file `sendmessage.token`.
+
+This token has to be stored in the `TELEGRAM_BOT_TOKEN` environment variable when running one of the bots.
