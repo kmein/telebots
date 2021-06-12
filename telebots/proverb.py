@@ -6,7 +6,7 @@ from telegram.ext import (
     Updater,
 )
 import telebots.token
-import proverb_pro.generator as proverb_pro
+import proverb_pro
 
 SEND_PIC = "📷"  # ":camera:"
 SEND_TEXT = "💬"  # ":speech_balloon:"
