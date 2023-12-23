@@ -13,7 +13,7 @@ pytz = "^2021.1"
 betacode = "^1.0"
 click = "^8.0.1"
 pygtrie = "^2.4.2"
-requests = "^2.25.1"
+requests = "^2.31.0"
 proverb_pro = { git = "https://github.com/kmein/proverb-pro.git" }
 
 [tool.poetry.scripts]
