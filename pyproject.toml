@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "telebots"
-version = "0.2.0"
+version = "0.3.0"
 description = "Various Telegram bots"
 authors = ["Kierán Meinhardt <kmein@posteo.de>"]
 
@@ -22,6 +22,7 @@ telegram-reverse = 'telebots.reverse:run'
 telegram-horoscope = 'telebots.horoscope:run'
 telegram-wrapper = 'telebots.wrapper:run'
 telegram-proverb = 'telebots.proverb:run'
+telegram-streaming-link = 'telebots.streaming_link:run'
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

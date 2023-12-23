@@ -18,6 +18,9 @@ This bot generates inspiring but nonsensical proverbs and images.
 This bot pipes every text it gets through a shell command (supplied as a command-line argument to `telegram-wrapper`).
 For example, `telegram-wrapper rev` will call the UNIX `rev` program on every text the bot is sent, reversing it.
 
+## telegram-streaming-link
+This bot converts from YouTube Music to Spotify links, utilizing [@omijn's website](https://github.com/omijn/yt2spotify).
+
 ## Installation
 Please run `poetry install` and then contact the
 [BotFather](https://telegram.me/botfather) and send `/newbot` to obtain a bot token.
